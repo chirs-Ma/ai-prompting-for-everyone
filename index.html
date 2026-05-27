@@ -1,0 +1,1174 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 提示词实用指南（面向所有人）</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #171a1f;
+      --muted: #5f6673;
+      --paper: #f7f8f4;
+      --surface: #ffffff;
+      --line: #d7ddd2;
+      --green: #1f6f5b;
+      --blue: #225b96;
+      --coral: #bd4d3c;
+      --yellow: #d5a020;
+      --shadow: 0 16px 45px rgba(28, 34, 29, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(90deg, rgba(31, 111, 91, 0.08) 0 1px, transparent 1px 100%),
+        linear-gradient(180deg, rgba(34, 91, 150, 0.05), transparent 320px),
+        var(--paper);
+      background-size: 52px 52px, auto, auto;
+      color: var(--ink);
+      font-family: "Source Han Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      line-height: 1.68;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 280px) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      border-right: 1px solid var(--line);
+      background: rgba(247, 248, 244, 0.92);
+      backdrop-filter: blur(14px);
+      overflow: auto;
+    }
+
+    .brand {
+      display: grid;
+      gap: 10px;
+      padding-bottom: 22px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .brand-mark {
+      width: 42px;
+      height: 42px;
+      display: grid;
+      place-items: center;
+      background: var(--ink);
+      color: white;
+      border-radius: 8px;
+      font-weight: 800;
+      letter-spacing: 0;
+    }
+
+    .brand strong {
+      font-size: 17px;
+      line-height: 1.25;
+    }
+
+    .brand small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav-group {
+      margin-top: 24px;
+    }
+
+    .nav-group h2 {
+      margin: 0 0 10px;
+      font-size: 12px;
+      color: var(--muted);
+      font-weight: 700;
+    }
+
+    .nav-group a {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-height: 34px;
+      padding: 7px 8px;
+      border-radius: 8px;
+      color: #303640;
+      font-size: 13px;
+    }
+
+    .nav-group a:hover {
+      background: #e8eee5;
+      color: var(--ink);
+    }
+
+    .nav-group span {
+      min-width: 28px;
+      color: var(--green);
+      font-weight: 800;
+    }
+
+    main {
+      min-width: 0;
+    }
+
+    .hero {
+      min-height: 62vh;
+      display: grid;
+      align-content: end;
+      padding: 72px clamp(22px, 6vw, 84px) 54px;
+      border-bottom: 1px solid var(--line);
+      background: #f3f6ef;
+      color: var(--ink);
+    }
+
+    .hero-content {
+      max-width: 900px;
+    }
+
+    .eyebrow {
+      margin: 0 0 18px;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--green);
+    }
+
+    h1 {
+      margin: 0;
+      font-family: "Songti SC", "STSong", "Noto Serif CJK SC", Georgia, serif;
+      font-size: clamp(42px, 7vw, 92px);
+      line-height: 0.98;
+      letter-spacing: 0;
+      max-width: 960px;
+    }
+
+    .hero-text {
+      max-width: 760px;
+      margin: 22px 0 0;
+      color: #4e5661;
+      font-size: clamp(17px, 2vw, 22px);
+    }
+
+    .stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 30px;
+    }
+
+    .stat {
+      min-width: 128px;
+      padding: 13px 16px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.72);
+    }
+
+    .stat b {
+      display: block;
+      font-size: 24px;
+      line-height: 1.1;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .overview {
+      padding: 36px clamp(22px, 6vw, 84px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.64);
+    }
+
+    .overview-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .route-card {
+      padding: 20px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: var(--surface);
+      box-shadow: 0 1px 0 rgba(23, 26, 31, 0.04);
+    }
+
+    .route-card strong {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 18px;
+    }
+
+    .route-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .module-section {
+      padding: 44px clamp(22px, 6vw, 84px) 56px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .module-heading {
+      display: grid;
+      grid-template-columns: 116px minmax(0, 760px);
+      gap: 28px;
+      align-items: center;
+      max-width: 980px;
+      margin-bottom: 28px;
+    }
+
+    .module-heading h2 {
+      margin: 0;
+      font-family: "Songti SC", "STSong", "Noto Serif CJK SC", Georgia, serif;
+      font-size: clamp(30px, 3.2vw, 46px);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .module-heading p {
+      margin: 0;
+      color: var(--muted);
+    }
+
+    .module-meta {
+      display: grid;
+      gap: 14px;
+      align-content: center;
+      justify-items: start;
+    }
+
+    .module-meta .module-number {
+      color: var(--coral);
+      font-weight: 900;
+      font-size: 13px;
+    }
+
+    .module-title-block p {
+      max-width: 500px;
+      margin-top: 10px;
+      font-size: 15px;
+      line-height: 1.65;
+    }
+
+    .module-meta span {
+      padding: 8px 11px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #eef4f1;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .lesson-stack {
+      display: grid;
+      gap: 18px;
+    }
+
+    .lesson-card {
+      display: grid;
+      grid-template-columns: 72px minmax(0, 1fr);
+      gap: 14px;
+      scroll-margin-top: 18px;
+    }
+
+    .lesson-index {
+      position: sticky;
+      top: 22px;
+      align-self: start;
+      padding-top: 18px;
+      color: var(--blue);
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .lesson-content {
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(260px, 0.75fr);
+      gap: 24px;
+      padding: 24px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.92);
+      box-shadow: var(--shadow);
+    }
+
+    .lesson-card.is-text-only .lesson-content {
+      grid-template-columns: 1fr;
+      max-width: 900px;
+    }
+
+    .lesson-copy {
+      min-width: 0;
+    }
+
+    .lesson-kicker {
+      margin: 0 0 7px;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .lesson-card h3 {
+      margin: 0 0 14px;
+      font-size: clamp(22px, 2.4vw, 34px);
+      line-height: 1.12;
+      letter-spacing: 0;
+    }
+
+    .lesson-intro {
+      margin: 0 0 20px;
+      color: #343a42;
+      font-size: 16px;
+    }
+
+    .lesson-columns {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    h4 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 14px;
+    }
+
+    ol,
+    ul {
+      margin: 0;
+      padding-left: 1.25em;
+    }
+
+    li {
+      margin: 0 0 8px;
+      color: #3e4550;
+      font-size: 14px;
+    }
+
+    .note-box {
+      margin-top: 16px;
+      padding: 14px 16px;
+      border-left: 4px solid var(--yellow);
+      border-radius: 8px;
+      background: #fbf6e7;
+    }
+
+    .note-box strong {
+      display: block;
+      margin-bottom: 7px;
+      color: #5f4510;
+      font-size: 13px;
+    }
+
+    .lesson-media {
+      margin: 0;
+      align-self: start;
+    }
+
+    .lesson-media img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: contain;
+      border-radius: 8px;
+      border: 1px solid var(--line);
+      background: #f2f5ef;
+    }
+
+    .footer {
+      padding: 32px clamp(22px, 6vw, 84px) 56px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    @media (max-width: 1050px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        position: relative;
+        height: auto;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .nav-group.lesson-links {
+        display: none;
+      }
+
+      .hero {
+        min-height: 64vh;
+      }
+
+      .module-heading,
+      .lesson-card,
+      .lesson-content {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-index {
+        position: static;
+        padding-top: 0;
+      }
+
+      .module-heading {
+        gap: 16px;
+      }
+
+      .module-meta {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .hero {
+        padding-top: 48px;
+      }
+
+      .overview-grid,
+      .lesson-columns {
+        grid-template-columns: 1fr;
+      }
+
+      .lesson-content {
+        padding: 18px;
+      }
+
+      .stat {
+        flex: 1 1 120px;
+      }
+    }
+
+    @media print {
+      body {
+        background: white;
+      }
+
+      .layout {
+        display: block;
+      }
+
+      .sidebar {
+        display: none;
+      }
+
+      .hero {
+        color: var(--ink);
+        background: white;
+        min-height: auto;
+      }
+
+      .lesson-content {
+        box-shadow: none;
+        break-inside: avoid;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="sidebar" aria-label="课程目录">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <strong>AI 提示词实用指南</strong>
+        <small>面向所有人的课程讲义 HTML 版</small>
+      </div>
+      <nav class="nav-group">
+        <h2>模块</h2>
+        <a href="#module-1">
+        <span>01</span>
+        信息检索
+      </a>
+<a href="#module-2">
+        <span>02</span>
+        AI 作为思维伙伴
+      </a>
+<a href="#module-3">
+        <span>03</span>
+        多媒体与代码应用
+      </a>
+      </nav>
+      <nav class="nav-group lesson-links">
+        <h2>课程</h2>
+        <a href="#lesson-the-ai-novice-and-the-ai-power-user">AI 新手与 AI 高级用户</a>
+<a href="#lesson-pretrained-knowledge">预训练知识</a>
+<a href="#lesson-web-search">网络搜索</a>
+<a href="#lesson-web-search-sources">网络搜索来源</a>
+<a href="#lesson-using-deep-research">使用深度研究</a>
+<a href="#lesson-brainstorming-with-ai">与 AI 头脑风暴</a>
+<a href="#lesson-context">上下文背景</a>
+<a href="#lesson-ai-desktop-apps">AI 桌面应用</a>
+<a href="#lesson-reasoning-with-ai">与 AI 共同推理</a>
+<a href="#lesson-sycophancy">AI 的奉承性（讨好行为）</a>
+<a href="#lesson-writing-with-ai">借助 AI 写作</a>
+<a href="#lesson-ai-critique">AI 批判性评估</a>
+<a href="#lesson-working-with-multimedia-data">处理多媒体数据</a>
+<a href="#lesson-image-understanding">图像理解</a>
+<a href="#lesson-image-generation">图像生成</a>
+<a href="#lesson-building-apps">构建应用程序</a>
+<a href="#lesson-data-analysis">数据分析</a>
+      </nav>
+    </aside>
+    <main>
+      <header class="hero">
+        <div class="hero-content">
+          <p class="eyebrow">AI Prompting for Everyone</p>
+          <h1>AI 提示词实用指南（面向所有人）</h1>
+          <p class="hero-text">基于本地课程资料整理，把“找信息、共同思考、多媒体与代码”串成一套可复用的 AI 使用方法。</p>
+          <div class="stats" aria-label="教程统计">
+            <div class="stat"><b>17</b><span>节核心课程</span></div>
+            <div class="stat"><b>3</b><span>个学习模块</span></div>
+            <div class="stat"><b>17</b><span>张配图</span></div>
+          </div>
+        </div>
+      </header>
+
+      <section class="overview" aria-label="学习路线">
+        <div class="overview-grid">
+          <div class="route-card">
+            <strong>1. 先判断知识来源</strong>
+            <p>稳定常识用预训练知识，最新和本地信息用搜索，复杂研究用 deep research。</p>
+          </div>
+          <div class="route-card">
+            <strong>2. 再补足上下文</strong>
+            <p>把目标、约束、文件、评价标准交给 AI，让它像真实合作者一样工作。</p>
+          </div>
+          <div class="route-card">
+            <strong>3. 最后验证产出</strong>
+            <p>图片、代码、数据分析和写作都能提速，但关键事实、数字和判断仍要复核。</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="module-section" id="module-1">
+    <div class="module-heading">
+      <div class="module-meta">
+        <p class="module-number">Module 01</p>
+        <span>查找、核对、综合</span>
+      </div>
+      <div class="module-title-block">
+        <h2>模块 1：信息检索</h2>
+        <p>先判断问题需要哪类知识，再选择预训练知识、联网搜索或深度研究。</p>
+      </div>
+    </div>
+    <div class="lesson-stack">
+      <article class="lesson-card" id="lesson-the-ai-novice-and-the-ai-power-user" data-module="01">
+    <div class="lesson-index">01.01</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 1：信息检索</p>
+        <h3>AI 新手与 AI 高级用户</h3>
+        <p class="lesson-intro">2026 年的 AI 工具已经比 ChatGPT 刚出现时强很多。真正的差异不只是模型能力，而是用户是否会把 AI 当成能处理复杂任务的思考伙伴来使用。AI 新手常把 AI 当搜索框，问短问题、给少量背景、直接要求产出；AI power user 会给 AI 足够上下文，让它花时间推理，用中立问题和评估标准获得更客观的反馈，并通过大纲、批评、迭代、扩写等阶段性流程产出更好的结果。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>AI 不只适合简单问答，也能处理需要综合资料、权衡利弊和长时间思考的复杂任务。</li>
+<li>高质量提示词需要给 AI 足够背景。短 prompt 往往会让 AI 用泛泛的默认信息补空白。</li>
+<li>想得到诚实反馈时，要减少问题里的暗示和立场，避免让 AI 只迎合你想听的答案。</li>
+<li>给出 rubric 或评分标准，可以让 AI 的判断更客观、更可解释。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>遇到复杂决策时，把相关材料一起交给 AI，例如规格、报价、方案、个人笔记或项目文档，并明确要求它先阅读、比较、再回答。</li>
+<li>写 prompt 前先问自己：如果一个聪明但不了解我背景的人收到这条指令，他是否有足够信息完成任务？</li>
+<li>请求批评时用中立表述，不要先告诉 AI “这是个好点子” 或暗示你想听到的结论。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>课程强调不要过度拟人化 AI，但可以用“对执行者有同理心”的方式设计指令：给足背景、目标和判断标准。</li>
+<li>AI 有迎合用户倾向，尤其在用户问题带有偏见或期待答案时更明显。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/the-ai-novice-and-the-ai-power-user.png" alt="AI 新手与 AI 高级用户配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-pretrained-knowledge" data-module="01">
+    <div class="lesson-index">01.02</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 1：信息检索</p>
+        <h3>预训练知识</h3>
+        <p class="lesson-intro">AI 的回答能力来自它在预训练阶段从大量互联网文本中学到的模式和知识。理解这些“预训练知识”的来源、覆盖频率和局限，可以帮助你更准确地预判 AI 擅长什么、不擅长什么，以及什么时候需要外部信息工具，例如网页搜索。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>AI 像人通过大量阅读学习写作一样，通过阅读大量文本学习语言模式、事实线索和常见问题的回答方式。</li>
+<li>预训练知识主要来自互联网中的多样文本，包括论坛、社交媒体、书籍、百科、新闻和研究文章等。</li>
+<li>训练数据中出现越频繁的主题，AI 通常越容易给出稳定回答；出现较少或几乎不存在的数据，可靠性会下降。</li>
+<li>互联网内容分布不均。常见主题如烹饪、电影、名人有大量文本，专业主题、少数语言或公司内部私有数据则覆盖更少。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>判断一个问题能不能直接问 AI：先想这个信息是否大量存在于公开互联网文本中。</li>
+<li>对常见知识、通用解释、常见经验类问题，可以先直接让 AI 回答。</li>
+<li>对最新事件、实时价格、法规变化、公司内部资料、专有数据或少数资料覆盖的主题，不要只依赖模型记忆。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>“预训练”这个词是技术术语，这节课不要求理解训练流程细节，只需要把它理解为 AI 已经从大量文本中学到的知识基础。</li>
+<li>AI 知道很多冷门事实，并不等于它知道所有事实；冷门公开资料和完全不公开的私有资料是两回事。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/pretrained-knowledge.png" alt="预训练知识配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-web-search" data-module="01">
+    <div class="lesson-index">01.03</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 1：信息检索</p>
+        <h3>网络搜索</h3>
+        <p class="lesson-intro">AI 模型的预训练知识会停留在某个知识截止日期，因此遇到新近、地域性、冷门或需要实时状态的问题时，模型需要通过网页搜索补充信息。网页搜索让 AI 能越过知识截止日期回答更多问题，但搜索结果也可能来自不可靠来源，所以后续还需要关注来源质量。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>模型的内置知识不是实时更新的。训练停止后，模型知道的是截止日期之前的互联网文本；之后发生的新事件、流行语、地点状态或网页变化，可能不在模型的预训练知识里。</li>
+<li>提示词里的时间线索会影响模型是否搜索。比如问题里出现 2025、最近、今天、现在这类信号时，模型更可能判断自己需要联网补充最新信息。</li>
+<li>网页搜索适合回答动态问题。当前事件、附近地点、开放时间、评分、冷门活动或小众知识，都比常识类问题更需要搜索。</li>
+<li>不需要搜索的问题通常是稳定常识。比如常见生活建议、长期存在的事实或互联网上大量出现过的知识，模型通常可以直接用预训练知识回答。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>问最新、当地、价格、营业状态、政策、软件版本、新闻或小众主题时，直接要求 AI 进行网页搜索。</li>
+<li>问稳定常识时，不必默认搜索；先让模型回答，再根据不确定性决定是否补充搜索。</li>
+<li>在提示词里写清楚时间范围和地点，例如“请搜索 2026 年 5 月的资料”或“请查 Mountain View 附近目前评价高的健身房”。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>保持人工复核，尤其是高风险或高度时效性的任务。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/web-search.png" alt="网络搜索配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-web-search-sources" data-module="01">
+    <div class="lesson-index">01.04</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 1：信息检索</p>
+        <h3>网络搜索来源</h3>
+        <p class="lesson-intro">启用联网搜索的 AI 很有用，但它不是自动可靠的事实机器。AI 搜索结果会受到来源流行度、网页时效性、搜索代理摘要质量的影响。要得到更可靠的答案，用户需要主动指定希望使用的来源类型，检查关键引用，并根据任务选择直接用搜索引擎还是让 AI 综合多来源信息。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>联网搜索会倾向抓取可见度高、文本量大的来源，而不一定优先抓取最可信的来源。社交媒体、论坛、博客和商业网站可能比官方机构或科学研究更容易被引用。</li>
+<li>对高风险或专业问题，要在 prompt 里明确要求 AI 使用权威来源。例如健康相关问题应优先查官方卫生组织、监管机构和严谨研究，而不是 Reddit、Quora 或销售方网页。</li>
+<li>网页可能过时，AI 也可能基于过时页面给出看似具体但已经失效的建议。课程用 Henderson 跑步地点的例子说明了本地、细分、时效性查询的风险。</li>
+<li>AI 的联网搜索通常不是一个模型直接阅读所有网页。用户面对的是主模型，主模型可能调用另一个搜索助手模型；搜索助手检索、筛选并摘要网页，再把摘要交给主模型生成答案。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>在涉及健康、法律、金融、政策、技术版本等问题时，把“优先使用哪些来源”写进 prompt，例如官方机构、监管文件、论文、厂商文档或最新公告。</li>
+<li>要求 AI 标出来源类型、日期、关键依据，并说明哪些信息来自权威来源，哪些只是论坛、博客或营销页面。</li>
+<li>对 AI 给出的关键引用打开原始网页核对，尤其检查它是否真的支持 AI 的结论。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>联网 AI 的答案质量不仅取决于模型，也取决于它检索到了什么、摘要了什么、是否误读了摘要。</li>
+<li>“有引用”不等于“引用可靠”或“引用支持结论”。引用只是检查的起点。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/web-search-sources.png" alt="网络搜索来源配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-using-deep-research" data-module="01">
+    <div class="lesson-index">01.05</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 1：信息检索</p>
+        <h3>使用深度研究</h3>
+        <p class="lesson-intro">当问题需要综合很多来源、比较多个维度、并形成有依据的结论时，不要只依赖模型预训练知识或普通联网搜索，而应显式启用 deep research。Deep research 会先形成研究计划，再并行搜索和阅读多个来源，评估哪些信息相关，必要时继续搜索，最后把大量材料综合成带引用的、更完整的研究报告。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>Deep research 适合复杂信息任务。它不是为单个事实查询设计的，而是为需要多来源、多角度、较长推理链的任务设计的。</li>
+<li>它体现了 agentic AI 的工作方式。模型在执行研究时会根据当前发现决定下一步，比如是否追加搜索、换关键词、深入某个方向。</li>
+<li>典型流程是：提出目标和背景，生成研究计划，用户审核或修改计划，执行多轮搜索和阅读，筛选相关资料，综合成报告。</li>
+<li>课程用“为前院万圣节鬼屋做规划”举例。模型会查当地许可、噪音规定、消防安全、装饰方案等不同来源，再产出结构化计划。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>在提问前判断任务复杂度：如果只是基本事实、定义、常见建议或无需新鲜信息，用预训练知识即可。</li>
+<li>如果需要近期信息但问题单一，用普通 web search。</li>
+<li>如果需要综合几十个来源、比较多个观点或形成深度结论，手动打开 deep research。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>预训练知识：最快，适合不需要联网的新鲜度不高的问题。</li>
+<li>Web search：会查少量网页，适合需要最新信息但范围较小的问题。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/using-deep-research.png" alt="使用深度研究配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+    </div>
+  </section>
+<section class="module-section" id="module-2">
+    <div class="module-heading">
+      <div class="module-meta">
+        <p class="module-number">Module 02</p>
+        <span>上下文、推理、批判</span>
+      </div>
+      <div class="module-title-block">
+        <h2>模块 2：AI 作为思维伙伴</h2>
+        <p>把 AI 从问答工具升级成共同思考、共同写作、共同审视的工作伙伴。</p>
+      </div>
+    </div>
+    <div class="lesson-stack">
+      <article class="lesson-card" id="lesson-brainstorming-with-ai" data-module="02">
+    <div class="lesson-index">02.01</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>与 AI 头脑风暴</h3>
+        <p class="lesson-intro">AI 不只是答案生成器，也可以作为 thought partner，帮助你在复杂问题上一起思考。用于 brainstorming 时，最有效的方法不是只让它列一个清单，而是给它足够上下文，让它先提出多个选项，再通过你的反馈不断迭代。这样可以把模型从常见、平均、泛泛的答案推向更贴合你处境、更有创造性的答案。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>AI 很适合作为临时 thought partner。当身边没有人类专家可以讨论时，AI 可以帮助你梳理复杂问题、做决定、产生选项。</li>
+<li>让 AI “生成很多想法”是常见用法，但不是最强用法。更好的方式是把它当成可反复对话的伙伴，而不是一次性列表机器。</li>
+<li>AI 往往更容易给出常识性答案。因为模型从大量互联网文本中学习，普通答案在训练数据中更常见，所以基础 prompt 常得到平均、稳妥但不够新颖的输出。</li>
+<li>更多相关上下文可以改变答案空间。课程用健身计划举例：只说“我是初学者、有 10 磅哑铃、每天 15 分钟”会得到常规动作；补充“坚持不下来、有蹦床和猫、不想做深蹲”等特殊约束，就更可能得到有创意的方案。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>开始 brainstorming 时，先给出尽可能相关的背景：目标、资源、限制、偏好、过去失败的原因、不能接受的方案。</li>
+<li>不要只问“给我一个答案”，改问“给我 3-5 个不同方向的选项”。</li>
+<li>对每个选项明确反馈：喜欢什么、不喜欢什么、哪里太普通、哪里不现实、哪里值得保留。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>一次性列表：能快速扩展想法数量，但容易泛泛。</li>
+<li>上下文驱动的 brainstorming：用具体处境把答案推向更相关的空间。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/brainstorming-with-ai.png" alt="与 AI 头脑风暴配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-context" data-module="02">
+    <div class="lesson-index">02.02</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>上下文背景</h3>
+        <p class="lesson-intro">Context 是 AI 用来生成定制化回答的全部输入，包括系统提示、工具说明、用户 prompt、上传文件、聊天历史和后续反馈。AI 能处理远超人类工作记忆的大量 context，因此你可以给它很多相关资料来获得更好的回答；但 context 不是越多越好，关键是让模型看到与当前问题相关的信息，并在话题切换时避免旧上下文干扰。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>人类工作记忆有限，通常只能同时保留少量事项；AI 模型则可以使用非常大的 context，有些模型能处理数十万词级别的上下文。</li>
+<li>Context 指模型生成回答时使用的所有文本和文件，而不只是你最后输入的一句话。</li>
+<li>如果 prompt 很短、背景很少，AI 只能给出较泛化的答案。课程用“物理和动物学专业利弊”举例：缺少个人背景时，模型只能做通用比较。</li>
+<li>如果补充职业测评、高中课程表、个人目标等资料，同一个问题就能得到更定制、更高质量的回答。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>在问复杂问题前，先列出 AI 需要知道的背景：目标、约束、已有资料、个人偏好、相关文件。</li>
+<li>对需要个性化判断的问题，不要只写一句泛泛问题；把能帮助顾问判断的信息也放进去。</li>
+<li>上传相关文件时，明确要求 AI 阅读所有资料、比较选项、列出利弊，并认真推理后回答。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>Prompt：你当前输入的一段请求。</li>
+<li>Context：模型生成回答时可见的全部信息，包括 prompt、文件、历史、系统和工具说明。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/context.png" alt="上下文背景配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-ai-desktop-apps" data-module="02">
+    <div class="lesson-index">02.03</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>AI 桌面应用</h3>
+        <p class="lesson-intro">AI 正在从聊天界面扩展到桌面协作应用。这类 AI desktop apps 在获得用户许可后，可以在电脑上主动查找、读取、写入、移动和重命名文件，从而自动收集完成任务所需的 context，并执行真实工作。它们很强大，但也需要谨慎管理权限和操作范围，尤其是涉及文件修改或删除时。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>AI desktop apps 不只是聊天窗口。它们可以在用户授权下访问本地文件，主动寻找相关 context，并对文件执行操作。</li>
+<li>典型用例是整理混乱文件夹。AI 可以读取文件名和内容，提出重组方案，再根据用户反馈细化方案，最后执行重命名、移动文件、创建子目录等操作。</li>
+<li>最佳流程是“先计划，后执行”。先告诉 AI 要完成的任务，让它提出 action plan；用户审阅和批评计划，必要时让它修改；满意后再明确授权执行。</li>
+<li>与普通聊天不同，桌面应用可以自己探索文件来补充 context。聊天界面通常要求用户提前决定上传哪些文件；桌面应用可以在给定文件夹中查找相关文件，只在需要时读取。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>运行 AI desktop app 时，把工作目录限定到任务相关文件夹，例如某个项目、某个拍摄资料夹或某个研究资料夹。</li>
+<li>对会修改文件的任务，要求 AI 先给出计划和预计改动，不要立即执行。</li>
+<li>审阅计划时检查它要读哪些文件、写哪些文件、移动或重命名哪些内容。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>普通 AI chat：用户需要提前上传或提供 context，AI 主要在对话中回答。</li>
+<li>AI desktop app：AI 可以在授权范围内自行发现 context，并对电脑文件采取行动。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/ai-desktop-apps.png" alt="AI 桌面应用配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-reasoning-with-ai" data-module="02">
+    <div class="lesson-index">02.04</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>与 AI 共同推理</h3>
+        <p class="lesson-intro">现代 AI 模型已经具备很强的 reasoning 能力。只要给足正确 context，它们可以在复杂任务上花更长时间严谨思考、调用工具补充信息、反复推理，最后给出更好的答案。使用这类能力时，不要只把 AI 当作秒回问答工具，而应把它当成能处理真实复杂任务的 reasoning engine。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>Reasoning 指模型能围绕任务进行较长时间、较严谨的思考，而不只是快速生成表面答案。</li>
+<li>复杂任务需要足够 context。课程用买车举例：上传车辆规格、保险方案、贷款报价等资料后，让 AI 比较每辆车的取舍，并要求它认真阅读和思考。</li>
+<li>AI 对长任务的能力在快速提升。课程引用 METR 的研究思路：按人类完成任务所需时间衡量难度，AI 已经能完成越来越多原本需要人类花很多小时的任务。</li>
+<li>过去常见的 “think step-by-step” 建议已经不再是主要方式。讲师现在更倾向于直接让模型 “think hard”，让模型自己选择合适的复杂推理方式。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>对复杂任务，先收集人类专家也需要看的资料：文档、约束、目标、评价标准、背景信息。</li>
+<li>在 prompt 中明确要求模型阅读全部 context、认真比较取舍，并在回答前充分思考。</li>
+<li>如果界面提供 thinking mode，就在复杂任务上打开它。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>快速问答：适合简单事实和短问题，通常几秒内完成。</li>
+<li>Reasoning task：需要整合大量 context、权衡多个标准、可能调用工具并多轮思考。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/reasoning-with-ai.png" alt="与 AI 共同推理配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-sycophancy" data-module="02">
+    <div class="lesson-index">02.05</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>AI 的奉承性（讨好行为）</h3>
+        <p class="lesson-intro">AI 模型常常会为了显得有帮助而迎合用户，这种现象叫 sycophancy。它会让模型更容易强化提问者已有的偏好，而不是给出客观、有证据、可比较的回答。避免它的核心方法是：提问时保持中性，不暗示自己想听到的结论，并尽量让上下文保持事实化。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>Sycophancy 的风险在于，模型会根据问题措辞猜测用户偏好，并倾向于赞同用户想听到的方向。</li>
+<li>带立场的问法会把答案引向预设结论。比如把远程办公、办公室办公、碳税、AI 对就业影响等问题问成“你不觉得 X 更好吗”，模型就更可能顺着这个方向回答。</li>
+<li>课程引用了对 ChatGPT 回答倾向的观察：模型更常使用赞同式反馈，而不是直接指出“不完全对”或补充反例。</li>
+<li>人类反馈会加剧这个问题。让用户感觉舒服的回答更容易获得正向反馈，因此模型可能学会更频繁地同意用户。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>把“你同意 X 吗？”改成“当前证据如何评价 X？”。</li>
+<li>把“X 是不是更好？”改成“X 和 Y 在哪些维度上各有利弊？”。</li>
+<li>把“找出支持我观点的数据”改成“请同时列出支持、反对和不确定的证据”。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>课程不是说 AI 不能给鼓励式反馈，而是说研究、决策、分析场景中，迎合式回答会降低答案质量。</li>
+<li>即使领先模型公司在降低 sycophancy，它仍然是当前 AI 使用中的常见问题。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/sycophancy.png" alt="AI 的奉承性（讨好行为）配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-writing-with-ai" data-module="02">
+    <div class="lesson-index">02.06</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>借助 AI 写作</h3>
+        <p class="lesson-intro">AI 可以帮助写作，但最好的用法不是让它直接替你产出最终稿，而是把它当成一个会推理的写作伙伴。直接让 AI 写成稿很容易得到看起来顺滑、实际空泛的 AI slop；更好的方式是先用 AI 帮你研究、搭框架、比较不同叙事结构、迭代大纲和要点，最后再扩展成正文。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>写作本质上是一种思考。OpenAI 的使用数据中，写作是 ChatGPT 最常见的一类任务之一，这说明用户经常把 AI 用在表达和组织想法上。</li>
+<li>AI slop 的问题不是单句完全不通顺，而是整体缺少实质、观点和细节。它常见于空泛夸张的表达、模板化结构、过度使用某些词语和修辞模式。</li>
+<li>AI 的写作风格会影响人类表达。课程提到，人们长期接触 AI 后，现实中的口语和文字也会逐渐吸收一些 AI 常用表达。</li>
+<li>逐步大纲法比直接生成终稿更高杠杆。先让 AI 提供多个大纲方案，再给反馈、调整结构、展开 bullet points，最后生成正文，可以更早改变文章的方向。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>不要一开始就说“帮我写一篇文章”。先让 AI 帮你澄清观点、收集正反证据、列出几个大纲方向。</li>
+<li>要求 AI 给出多个结构方案，例如故事型、模式归纳型、先结论后案例型，并主动加入反方观点。</li>
+<li>把自己的素材、案例、目标立场和读者背景提供给 AI，让它围绕真实上下文组织内容。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>课程并不是说 AI 不适合写作，而是说“直接交给 AI 写最终稿”通常不是最有效的写作流程。</li>
+<li>使用 AI 写作时，要保留人的观点、取舍、证据和细节，否则文字会变成看似完整但没有深度的内容。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/writing-with-ai.png" alt="借助 AI 写作配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-ai-critique" data-module="02">
+    <div class="lesson-index">02.07</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 2：AI 作为思维伙伴</p>
+        <h3>AI 批判性评估</h3>
+        <p class="lesson-intro">AI 很适合当写作和思考上的 critique partner，但前提不是把整篇文章一股脑丢给它，而是给它明确工作方式。局部编辑时要按句子或段落逐块迭代；整体验收时要用清晰、可执行的 rubric 把评分标准讲明白，这样才能减少 sycophancy，让模型更像客观审稿人而不是只会夸你。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>当你已经写出初稿时，AI 最擅长的不是“全篇一键重写”，而是对局部内容做逐段、逐句的编辑和打磨。</li>
+<li>更稳的编辑工作流是一次只处理一个句子或一个段落，先把这一小块改满意，再继续下一块。</li>
+<li>AI 可以围绕同一句话给出多种改写方向，比如更 punchy、更 visionary、更 conversational，让你按目标语气挑选。</li>
+<li>如果直接让 AI “批评一下这篇文章”，它往往会受 sycophancy 影响，默认给出偏宽松、偏讨好的反馈。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>写文章时，不要先让 AI 改整篇；先贴一个段落，要求它提供 3-5 种不同风格的改写方案。</li>
+<li>每改完一段就做一次小决策：保留原句、采用某个版本，或让它继续只改这一段。</li>
+<li>在需要整体批评时，先自己写 rubric，列出评分维度、分值和每个维度的判断标准。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>局部编辑：目标是把句子或段落打磨得更清楚、更贴合语气，适合逐块迭代。</li>
+<li>整体 critique：目标是发现结构、叙事、评价标准上的问题，适合用 rubric 驱动。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/ai-critique.png" alt="AI 批判性评估配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+    </div>
+  </section>
+<section class="module-section" id="module-3">
+    <div class="module-heading">
+      <div class="module-meta">
+        <p class="module-number">Module 03</p>
+        <span>图像、代码、数据</span>
+      </div>
+      <div class="module-title-block">
+        <h2>模块 3：多媒体与代码应用</h2>
+        <p>把文字之外的图片、数据、代码和应用构建纳入同一个 AI 工作流。</p>
+      </div>
+    </div>
+    <div class="lesson-stack">
+      <article class="lesson-card" id="lesson-working-with-multimedia-data" data-module="03">
+    <div class="lesson-index">03.01</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 3：多媒体与代码应用</p>
+        <h3>处理多媒体数据</h3>
+        <p class="lesson-intro">这节课从“文本之外的 AI”切入，介绍多模态输入和输出的基本认知。核心结论是：AI 不仅能生成文本，也能生成图像、视频、语音、音乐和代码，还能理解图像等非文本输入；但一旦进入多模态，生成速度、成本、可迭代性和责任边界都会变得更重要，提示策略也需要随之调整。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>多模态的价值不只是“更炫”，而是能把创意探索、原型制作和表达落地做得更快，例如用 AI 先生成生日蛋糕设计图，再交给现实中的师傅制作。</li>
+<li>输入和输出要分开理解。多数输入模态接入模型时的成本差异不算特别大，但输出差异非常明显：文本通常最快最便宜，语音更贵，图像更贵，视频最慢也最贵。</li>
+<li>之前学过的提示方法仍然有效，例如给足上下文、优先用更强模型；但“多出几个版本再比较”“快速高频迭代”在图像和视频任务里会更慢、更贵，因此要重新权衡。</li>
+<li>多模态能力也带来责任问题。语音克隆、图像和视频生成既有正当用途，也可能被用于诈骗或误导，所以应用场景必须明确边界。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>面对外观、风格、声音、视频分镜这类任务时，先把 AI 当成 brainstorming 和原型工具，而不是一开始就追求最终成品。</li>
+<li>设计多模态工作流时，先估算不同模态的等待时间和成本，不要把文本任务里的试错节奏原样套到图像或视频生成上。</li>
+<li>处理语音克隆、人物图像等敏感模态前，先定义授权范围、允许用途和滥用防护，再开始提示设计和产品接入。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>保持人工复核，尤其是高风险或高度时效性的任务。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/working-with-multimedia-data.png" alt="处理多媒体数据配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-image-understanding" data-module="03">
+    <div class="lesson-index">03.02</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 3：多媒体与代码应用</p>
+        <h3>图像理解</h3>
+        <p class="lesson-intro">把图片作为 prompt 的一部分交给 AI，让模型直接“看”到你想表达的上下文。核心判断是：图片往往能比文字更快提供关键信息，尤其适合白板、收据、手写内容、头脑风暴现场这类不容易精确描述的材料；但图像理解并不等于精确视觉识别，模型常常能抓住大意，却可能漏掉细节，所以适合提效，不适合不经复核就直接用于高风险判断。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>图片是高密度上下文。很多难以用文字完整描述的对象、草图、手写内容或现场材料，直接上传图片通常更高效。</li>
+<li>视觉理解的强项是“粗粒度解释”。模型经常能根据整体结构做出聪明推断，例如从被遮挡的白板内容里推断课堂主题。</li>
+<li>视觉理解的弱项是“细粒度辨别”。面对外观相似、依赖局部细节区分的物体，模型可能会很自信地答错。</li>
+<li>图像输入不只支持识别，也支持执行较复杂任务，例如读收据、转写手写文字、汇总多张头脑风暴图片，但结果仍然需要人工复核。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>当你发现一段上下文很难描述时，优先考虑直接把照片、截图或白板图传给 AI，而不是先花时间把它转成文字。</li>
+<li>让 AI 处理图片时，把任务设计成“解释、总结、转写、归纳”这类容错更高的工作，而不是过度依赖细节识别。</li>
+<li>如果输入里包含多张照片、便签和笔记，直接让 AI 汇总主题和行动项，可以显著加快会议整理或资料归档。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>保持人工复核，尤其是高风险或高度时效性的任务。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/image-understanding.png" alt="图像理解配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-image-generation" data-module="03">
+    <div class="lesson-index">03.03</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 3：多媒体与代码应用</p>
+        <h3>图像生成</h3>
+        <p class="lesson-intro">这节课把图像生成拆成了三个层面：怎么把图像任务用起来、怎么把图像 prompt 说得更准、以及图像模型到底是如何生成结果的。Andrew Ng 的核心观点是，想要稳定地产出更好的图片，不能只会“写一句描述”，还要理解视觉语言、扩散模型的基本机制，以及图像生成在成本和迭代上的现实限制。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>图像生成不只是从零出图，也非常适合做图像编辑。课程用一张旧童年照片举例，说明“上传原图 + 去眩光 + 去粗糙纹理 + 调整比例”这类编辑式 prompt 往往很实用。</li>
+<li>如果不知道怎么写图像 prompt，可以先让文本模型帮你起草。一个可用的图像 prompt 往往至少会交代场景、角色细节、氛围和风格。</li>
+<li>懂视觉艺术的人通常更擅长图像 prompting，因为他们更熟悉 cinematic、水彩、cyberpunk、anime 这类“图像语言”，能更准确地描述想要的效果。</li>
+<li>课程建议反向训练自己的视觉词汇：上传参考图，请 AI 解释“这张图该如何描述”，借此积累更精确的风格和构图表达。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>先用文本模型起草第一版图像 prompt，再手工补充主体细节、构图、风格和情绪。</li>
+<li>为自己建立一个常用的视觉词汇表，重点积累镜头感、材质感、画风和情绪类描述词。</li>
+<li>优先尝试“上传参考图或原图再编辑”，这通常比完全从零生成更可控。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>保持人工复核，尤其是高风险或高度时效性的任务。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/image-generation.png" alt="图像生成配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-building-apps" data-module="03">
+    <div class="lesson-index">03.04</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 3：多媒体与代码应用</p>
+        <h3>构建应用程序</h3>
+        <p class="lesson-intro">AI 正在把“做一个小软件”从专业开发者的专属能力，逐步变成更多人可以通过自然语言 prompt 去尝试的能力。课程并没有把这件事说得毫无门槛，而是给出一个非常务实的起点：先让模型生成范围小、输入输出清晰、无需外部依赖的简单游戏或工具，从试错中建立“什么容易、什么复杂”的直觉。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>只用一个简短 prompt，模型就可能做出可玩的小游戏或简单网页应用，这说明“用文字描述需求 -&gt; 生成可交互原型”已经具备实际可用性。</li>
+<li>写“让 AI 帮你做 app”的 prompt 时，至少要说清三件事：目标是什么、用户输入什么、系统输出什么。课程用 fireworks simulator 举例，说明这种结构化描述更容易产出可用结果。</li>
+<li>新手最适合从任务单一、边界明确、无需上传文件或外部数据、可短时使用后关闭的小应用开始，例如障碍物小游戏、Pomodoro 计时器、分账计算器、穿搭建议工具。</li>
+<li>AI 能做的不只是娱乐类 demo，也包括节省时间的实用工具；关键不是“先做一个大而全的产品”，而是把需求压缩到一个具体动作。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>先用 `目标 / 输入 / 输出` 三段结构写 prompt，而不是一开始就写一大段含混的需求描述。</li>
+<li>优先选择几分钟内就能验证结果的小应用，例如计时器、计算器、小游戏或单页工具，暂时避开账户体系、多人协作、外部 API 等依赖。</li>
+<li>把第一次生成的结果当成“可运行草稿”，观察哪里偏了，再继续细化 prompt，而不是一开始就追求完美。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>课程明确强调，这项能力并不 trivial，不是一句 prompt 就能稳定做出复杂软件，仍然需要练习和试错。</li>
+<li>这节课展示的大多是简单、封闭、小范围任务，不能直接外推到复杂生产级应用。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/building-apps.png" alt="构建应用程序配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+<article class="lesson-card" id="lesson-data-analysis" data-module="03">
+    <div class="lesson-index">03.05</div>
+    <div class="lesson-content">
+      <div class="lesson-copy">
+        <p class="lesson-kicker">模块 3：多媒体与代码应用</p>
+        <h3>数据分析</h3>
+        <p class="lesson-intro">当你手上已经有结构化数据时，AI 的价值不只是“聊一聊结论”，而是可以把“写代码分析数据、生成图表、提炼洞察”这一整段流程接过去。课程的重点不是把 AI 神化成完整替代数据科学家，而是给出一个非常实用的判断框架：什么场景该用预训练知识，什么场景该开 web search，什么场景该交给 code execution；同时提醒你，AI 很适合做基础分析和快速探索，但结论仍然需要人复核。</p>
+        <div class="lesson-columns">
+          <section>
+            <h4>关键要点</h4>
+            <ol><li>只要你有可上传的数据文件，例如运动记录、健康记录、销售表格或一般 spreadsheet，AI 就可能通过写代码和运行代码来完成基础数据分析。</li>
+<li>课程强调的不是“让 AI 空口判断”，而是“让 AI 用代码算、画、比、提炼”，所以它尤其适合带有计算、分组、趋势比较和图表需求的问题。</li>
+<li>对个人数据，例子是跑步或心率记录；对业务数据，例子是小企业销售表。两类例子都说明：上传数据后，直接问趋势、变化、异常点和图表呈现，往往比自己手工处理更高效。</li>
+<li>讲者明确指出，AI 数据分析通常不如顶级人类数据科学家细致，但在提取基础 insight、快速做第一轮探索时，已经相当有用。</li></ol>
+          </section>
+          <section>
+            <h4>直接应用</h4>
+            <ol><li>给 AI 上传原始数据文件后，不要只问“你看到了什么”，而要直接问具体问题，例如“哪些品类变化最大”“按月画趋势图”“帮我总结异常点”。</li>
+<li>如果你希望模型做更深入的分析，可以在 prompt 里明确要求它 `analyze carefully`，让它花更长时间做推理、计算和汇总。</li>
+<li>当任务涉及数字、统计、图表或分组比较时，优先选支持 code execution 的模型，而不是只依赖普通聊天模型。</li></ol>
+          </section>
+        </div>
+        <aside class="note-box">
+          <strong>使用提醒</strong>
+          <ul><li>这节课并没有说 AI 已经能稳定替代专业分析师；它更适合做第一轮探索、快速计算和辅助制图。</li>
+<li>模型写代码并不等于结论一定正确，尤其当数据脏、字段含义不清或问题定义含混时，仍可能出现误判。</li></ul>
+        </aside>
+      </div>
+      <figure class="lesson-media">
+        <img src="assets/data-analysis.png" alt="数据分析配图" loading="lazy">
+      </figure>
+    </div>
+  </article>
+    </div>
+  </section>
+
+      <footer class="footer">
+        <p>资料来源：/Users/chirsma/Desktop/ai-prompting-for-everyone/ai-prompting-for-everyone 下各 lesson 的 summary.md 与图片文件。页面图片已复制到本教程 assets 目录。</p>
+      </footer>
+    </main>
+  </div>
+</body>
+</html>
