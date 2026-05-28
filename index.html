@@ -245,18 +245,17 @@
 
             .module-heading {
                 display: grid;
-                grid-template-columns: 116px minmax(0, 760px);
-                gap: 28px;
-                align-items: center;
+                grid-template-columns: 1fr;
+                gap: 12px;
                 max-width: 980px;
-                margin-bottom: 28px;
+                margin-bottom: 32px;
             }
 
             .module-heading h2 {
                 margin: 0;
                 font-family:
                     "Songti SC", "STSong", "Noto Serif CJK SC", Georgia, serif;
-                font-size: clamp(30px, 3.2vw, 46px);
+                font-size: clamp(34px, 4.4vw, 58px);
                 line-height: 1.08;
                 letter-spacing: 0;
             }
@@ -267,33 +266,41 @@
             }
 
             .module-meta {
-                display: grid;
-                gap: 14px;
-                align-content: center;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 10px;
+                align-items: center;
                 justify-items: start;
             }
 
             .module-meta .module-number {
+                margin: 0;
+                padding: 6px 10px;
+                border: 1px solid rgba(189, 77, 60, 0.18);
+                border-radius: 999px;
+                background: rgba(189, 77, 60, 0.08);
                 color: var(--coral);
                 font-weight: 900;
-                font-size: 13px;
+                font-size: 12px;
+                line-height: 1;
             }
 
             .module-title-block p {
                 max-width: 500px;
-                margin-top: 10px;
+                margin: 0;
                 font-size: 15px;
                 line-height: 1.65;
             }
 
             .module-meta span {
-                padding: 8px 11px;
+                padding: 6px 10px;
                 border: 1px solid var(--line);
                 border-radius: 999px;
                 background: #eef4f1;
                 color: var(--green);
                 font-size: 12px;
                 font-weight: 800;
+                line-height: 1;
             }
 
             .lesson-stack {
@@ -410,6 +417,82 @@
                 border-radius: 8px;
                 border: 1px solid var(--line);
                 background: #f2f5ef;
+                cursor: zoom-in;
+                transition:
+                    border-color 0.18s ease,
+                    box-shadow 0.18s ease,
+                    transform 0.18s ease;
+            }
+
+            .lesson-media img:hover {
+                border-color: rgba(31, 111, 91, 0.48);
+                box-shadow: 0 10px 28px rgba(28, 34, 29, 0.12);
+                transform: translateY(-1px);
+            }
+
+            .lesson-media img:focus-visible {
+                outline: 3px solid rgba(31, 111, 91, 0.34);
+                outline-offset: 4px;
+            }
+
+            body.lightbox-open {
+                overflow: hidden;
+            }
+
+            .image-lightbox {
+                position: fixed;
+                inset: 0;
+                z-index: 100;
+                display: grid;
+                place-items: center;
+                padding: clamp(18px, 4vw, 48px);
+                background: rgba(23, 26, 31, 0.84);
+                opacity: 0;
+                pointer-events: none;
+                transition: opacity 0.18s ease;
+            }
+
+            .image-lightbox.is-open {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            .image-lightbox__image {
+                display: block;
+                max-width: min(1120px, 92vw);
+                max-height: 86vh;
+                width: auto;
+                height: auto;
+                object-fit: contain;
+                border-radius: 8px;
+                background: var(--surface);
+                box-shadow: 0 28px 72px rgba(0, 0, 0, 0.34);
+                cursor: default;
+            }
+
+            .image-lightbox__close {
+                position: absolute;
+                top: clamp(14px, 3vw, 30px);
+                right: clamp(14px, 3vw, 30px);
+                width: 44px;
+                height: 44px;
+                display: grid;
+                place-items: center;
+                border: 1px solid rgba(255, 255, 255, 0.72);
+                border-radius: 999px;
+                background: rgba(255, 255, 255, 0.94);
+                color: var(--ink);
+                cursor: pointer;
+                font: inherit;
+                font-size: 28px;
+                line-height: 1;
+            }
+
+            .image-lightbox__close:hover,
+            .image-lightbox__close:focus-visible {
+                background: var(--surface);
+                outline: 3px solid rgba(255, 255, 255, 0.34);
+                outline-offset: 3px;
             }
 
             .footer {
@@ -2038,14 +2121,88 @@
                     </div>
                 </section>
 
-                <footer class="footer">
-                    <p>
-                        资料来源：/Users/chirsma/Desktop/ai-prompting-for-everyone/ai-prompting-for-everyone
-                        下各 lesson 的 summary.md
-                        与图片文件。页面图片已复制到本教程 assets 目录。
-                    </p>
-                </footer>
+                <footer class="footer"></footer>
             </main>
         </div>
+        <script>
+            const lessonImages = document.querySelectorAll(".lesson-media img");
+
+            if (lessonImages.length > 0) {
+                const lightbox = document.createElement("div");
+                lightbox.className = "image-lightbox";
+                lightbox.setAttribute("role", "dialog");
+                lightbox.setAttribute("aria-modal", "true");
+                lightbox.setAttribute("aria-label", "放大图片");
+                lightbox.setAttribute("aria-hidden", "true");
+                lightbox.innerHTML = `
+                    <button class="image-lightbox__close" type="button" aria-label="关闭放大图片">&times;</button>
+                    <img class="image-lightbox__image" alt="" />
+                `;
+
+                document.body.append(lightbox);
+
+                const lightboxImage = lightbox.querySelector(
+                    ".image-lightbox__image",
+                );
+                const closeButton = lightbox.querySelector(
+                    ".image-lightbox__close",
+                );
+                let lastFocusedElement = null;
+
+                const openLightbox = (image) => {
+                    lastFocusedElement = document.activeElement;
+                    lightboxImage.src = image.currentSrc || image.src;
+                    lightboxImage.alt = image.alt || "";
+                    lightbox.classList.add("is-open");
+                    lightbox.setAttribute("aria-hidden", "false");
+                    document.body.classList.add("lightbox-open");
+                    closeButton.focus();
+                };
+
+                const closeLightbox = () => {
+                    lightbox.classList.remove("is-open");
+                    lightbox.setAttribute("aria-hidden", "true");
+                    document.body.classList.remove("lightbox-open");
+                    lightboxImage.removeAttribute("src");
+
+                    if (lastFocusedElement instanceof HTMLElement) {
+                        lastFocusedElement.focus();
+                    }
+                };
+
+                lessonImages.forEach((image) => {
+                    const label = image.alt || "课程图片";
+
+                    image.tabIndex = 0;
+                    image.setAttribute("role", "button");
+                    image.setAttribute("aria-label", `${label}，点击放大`);
+                    image.addEventListener("click", () => openLightbox(image));
+                    image.addEventListener("keydown", (event) => {
+                        if (event.key === "Enter" || event.key === " ") {
+                            event.preventDefault();
+                            openLightbox(image);
+                        }
+                    });
+                });
+
+                closeButton.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                    closeLightbox();
+                });
+                lightbox.addEventListener("click", closeLightbox);
+                lightboxImage.addEventListener("click", (event) => {
+                    event.stopPropagation();
+                });
+
+                document.addEventListener("keydown", (event) => {
+                    if (
+                        event.key === "Escape" &&
+                        lightbox.classList.contains("is-open")
+                    ) {
+                        closeLightbox();
+                    }
+                });
+            }
+        </script>
     </body>
 </html>
